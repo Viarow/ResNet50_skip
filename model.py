@@ -14,13 +14,13 @@ class LayerGate(nn.Module):
 
         self.conv_1 = nn.Conv2d(in_channels= in_channels, out_channels=10, kernel_size=1)
         self.relu = nn.ReLU(inplace=True)
-
+        self.GAP = nn.AdaptiveAvgPool2d((1,1))
         # blob shape: N*10*1*1, N refers to batch size
         self.lstm = nn.LSTM(input_size=10, hidden_size=10, num_layers=1)
         self.fc = nn.Linear(10, 1)
 
     def forward(self, input):
-        x = nn.AvgPool2d(kernel_size=input.shape[-1])(input)
+        x = self.GAP(input)
         x = self.conv_1(x)
         x = self.relu(x)
 
@@ -45,13 +45,14 @@ class ChannelGate(nn.Module):
 
         self.conv = nn.Conv2d(in_channels=in_channels, out_channels=in_channels,
                               kernel_size=3, stride=2)
+        self.GAP = nn.AdaptiveAvgPool2d((1,1))
         self.fc = nn.Linear(in_channels, in_channels)
         self.relu = nn.ReLU(inplace=True)
 
     def forward(self, input):
         x = self.conv(input)
         x = self.relu(x)
-        x = nn.AvgPool2d(kernel_size=x.shape[-1])(x)
+        x = self.GAP(x)
         x = self.fc(torch.squeeze(x))
         x = self.relu(x)
         x = nn.functional.sigmoid(x)
@@ -99,7 +100,7 @@ class AdaptConv2d(nn.Module):
                 output[k] = idx*image_conv + (1-idx)*image
 
                 self.flops += conv_flops(c_in=input.shape[1],c_out=channel_idx[k].sum(),
-                                         k_size=self.conv.kererl_size, h=input.shape[-2], w=input.shape[-1])
+                                         k_size=self.conv.kernel_size, h=input.shape[-2], w=input.shape[-1])
 
         return output
 
