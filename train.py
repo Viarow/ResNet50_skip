@@ -1,7 +1,7 @@
 import torch
 import torchvision
 import torchvision.transforms as transforms
-import os
+from tqdm import tqdm
 import torch.nn as nn
 import torch.optim as optim
 import argparse
@@ -43,7 +43,7 @@ def train(args):
     for epoch in range(epoch_num):
 
         running_loss = 0.0
-        for i,data in enumerate(trainloader,0):
+        for i,data in enumerate(tqdm(trainloader)):
 
             inputs, labels = data
             inputs, labels = inputs.cuda(), labels.cuda()
