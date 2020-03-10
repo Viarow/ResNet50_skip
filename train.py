@@ -32,7 +32,7 @@ def train(args):
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         model = model.to(device)
 
-    model.cuda()
+
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum,
@@ -51,16 +51,15 @@ def train(args):
             optimizer.zero_grad()
 
             outputs = model(inputs)
-            flops = model.flops
-
-            compute_cost = args.alpha * flops
-            loss = criterion(outputs, labels) + compute_cost
+            #flops = model.flops
+            #compute_cost = args.alpha * flops
+            loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
 
             running_loss += loss.item()
             if i % 2000 == 1999:
-                print("epoch-%d sample-%d compute_cost: %.3f" % (epoch+1, i+1, compute_cost))
+                #print("epoch-%d sample-%d compute_cost: %.3f" % (epoch+1, i+1, compute_cost))
                 print("epoch-%d sample-%d running_loss: %.3f" % (epoch + 1, i + 1, running_loss))
                 running_loss = 0.0
 
