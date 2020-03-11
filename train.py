@@ -19,7 +19,7 @@ def compute_flops(module, input, output):
 
     for k in range(0, batch_size):
         c_out = output[0][k].cpu().sum()
-        flops += ((k_size * k_size * c_in) * c_out + c_out) * (h * w)
+        flops += ( 2*c_in*k_size*k_size - 1 )*h*w*c_out
         FLOP_list.append(flops)
 
 
@@ -101,7 +101,7 @@ def parse_args():
     parser.add_argument('-lr', type=float, default=5e-2)
     parser.add_argument('-weight_decay', type=float, default=1e-4)
     parser.add_argument('-batch_size', type=int, default=4)
-    parser.add_argument('-alpha', type=float, default=1e-11)
+    parser.add_argument('-alpha', type=float, default=5e-12)
     parser.add_argument('-checkpoint', type=int, default=50)
     args = parser.parse_args()
 
